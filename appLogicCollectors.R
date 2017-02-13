@@ -34,7 +34,6 @@ observeEvent(input$collectorList, {
         selItemFreq <- allItems[rownames(allItems) == selItem, 'frequency']
         selItemRepo <- allItems[rownames(allItems) == selItem, 'repo']
         selItemActive <- allItems[rownames(allItems) == selItem, 'active']
-        save(selItem, allItems, selItemRepo, file='tmpIntermediate.RData')
         updateTextInput(session, 'collectorItemName',
                         value = selItemName)
         updateTextInput(session, 'collectorItemRscript',

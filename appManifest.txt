@@ -1,0 +1,21 @@
+{
+        "name":"Online Daten",
+        "identifier":"eu.ownyourdata.collect",
+        "appUrl":"https://collect.datentresor.org",
+        "mobileUrl":"https://collect.datentresor.org",
+        "infoUrl":"https://www.ownyourdata.eu/apps/collectt",
+        "type":"external",
+        "description":"Sammelt periodisch Daten aus Online-Quellen und stellt diese dar.",
+        "permissions":[
+                "eu.ownyourdata.info:read",
+                "eu.ownyourdata.info:write",
+                "eu.ownyourdata.info:update",
+                "eu.ownyourdata.collect*:read",
+                "eu.ownyourdata.collect*:write",
+                "eu.ownyourdata.collect*:update",
+                "eu.ownyourdata.collect*:delete",
+                "eu.ownyourdata.scheduler*:read",
+                "eu.ownyourdata.scheduler*:write",
+                "eu.ownyourdata.scheduler*:update",
+                "eu.ownyourdata.scheduler*:delete" ]
+}

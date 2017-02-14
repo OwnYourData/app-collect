@@ -6,16 +6,27 @@ readCollectorItems <- function(){
         app <- currApp()
         collectorItems <- data.frame()
         if(length(app) > 0){
-                url <- itemsUrl(app[['url']], 
-                                paste0(app[['app_key']],
-                                       '.collectors'))
-                collectorItems <- readItems(app, url)
-                if(nrow(collectorItems) > 0){
-                        rownames(collectorItems) <- collectorItems$name
+                retVal <- readSchedulerItemsFunction()
+                if(nrow(retVal) > 0){
+                        paramDF <- do.call(bind_rows, 
+                                           lapply(retVal$parameters, 
+                                                  function(x) data.frame(t(sapply(x,c)), stringsAsFactors = FALSE)))
+                        respStructDF <- do.call(bind_rows,
+                                                lapply(paramDF$response_structure,
+                                                       function(x) data.frame(t(sapply(x,c)), stringsAsFactors = FALSE)))
+                        collectorItems <- cbind(retVal, paramDF, respStructDF)
+                        rownames(collectorItems) <- collectorItems$repoName
+                        collectorItems$rScript <- base64Decode(collectorItems$Rscript_base64)
                         collectorItems <- collectorItems[, c('rScript',
-                                                             'frequency',
+                                                             'time',
                                                              'repo',
-                                                             'active')]
+                                                             'active',
+                                                             'id')]
+                        colnames(collectorItems) <- c('rScript',
+                                                      'frequency',
+                                                      'repo',
+                                                      'active',
+                                                      'id')
                 }
         }
         collectorItems
@@ -47,7 +58,7 @@ observeEvent(input$collectorList, {
 })
 
 observeEvent(input$addCollectorItem, {
-        errMsg   <- ''
+        errMsg <- ''
         itemName    <- input$collectorItemName
         itemRscript <- input$collectorItemRscript
         itemFreq    <- input$collectorItemFrequency
@@ -60,16 +71,12 @@ observeEvent(input$addCollectorItem, {
         }
         if(errMsg == ''){
                 app <- currApp()
-                url <- itemsUrl(app[['url']],
-                                paste0(app[['app_key']],
-                                       '.collectors'))
-                data <- list(name      = itemName,
-                             rScript   = itemRscript,
-                             frequency = itemFreq,
-                             repo      = itemRepo,
-                             active    = itemActive)
-                data$`_oydRepoName` <- 'Datenquellen'
-                writeItem(app, url, data)
+                writeSchedulerRscript(app,
+                                      itemName,
+                                      itemRscript,
+                                      itemFreq,
+                                      itemRepo,
+                                      itemActive)
                 initNames <- rownames(allItems)
                 allItems$rScript <- as.character(allItems$rScript )
                 allItems$frequency <- as.character(allItems$frequency)
@@ -117,17 +124,14 @@ observeEvent(input$updateCollectorItem, {
         if(errMsg == ''){
                 allItems <- readCollectorItems()
                 app <- currApp()
-                url <- itemsUrl(app[['url']],
-                                paste0(app[['app_key']],
-                                       '.collectors'))
-                data <- list(name      = itemName,
-                             rScript   = itemRscript,
-                             frequency = itemFreq,
-                             repo      = itemRepo,
-                             active    = itemActive)
-                collectorItems <- readItems(app, url)
-                id <- collectorItems[collectorItems$name == selItem, 'id']
-                updateItem(app, url, data, id)
+                id <- allItems[rownames(allItems) == selItem, 'id']
+                writeSchedulerRscript(app,
+                                      itemName,
+                                      itemRscript,
+                                      itemFreq,
+                                      itemRepo,
+                                      itemActive,
+                                      id)
                 newRowNames <- rownames(allItems)
                 newRowNames[newRowNames == selItem] <- itemName
                 updateSelectInput(session, 'collectorList',
@@ -166,10 +170,8 @@ observeEvent(input$delCollectorList, {
                 newRowNames <- rownames(allItems)
                 app <- currApp()
                 url <- itemsUrl(app[['url']],
-                                paste0(app[['app_key']],
-                                       '.collectors'))
-                collectorItems <- readItems(app, url)
-                id <- collectorItems[collectorItems$name == selItem, 'id']
+                                schedulerKey)
+                id <- allItems[rownames(allItems) == selItem, 'id']
                 deleteItem(app, url, id)
                 newRowNames <- newRowNames[newRowNames != selItem]
                 allItems <- allItems[rownames(allItems) != selItem, ]

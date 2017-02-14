@@ -3,10 +3,12 @@
 
 writeSchedulerEmail <- function(app, app_name, email, subject, content, time, response_structure, id){
         port <- as.character(session$clientData$url_port)
-        app_url <- paste0(session$clientData$url_protocol, '//',
-                          session$clientData$url_hostname)
-        if(port != '80'){
-                app_url <- paste0(app_url, ':', port)
+        url <- paste0(session$clientData$url_protocol, '//',
+                      session$clientData$url_hostname)
+        if(port == '80'){
+                app_url <- url
+        } else {
+                app_url <- paste0(url, ':', port)
         }
         if(missing(response_structure)) {
                 parameters <- list(address = email,

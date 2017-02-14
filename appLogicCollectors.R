@@ -17,7 +17,6 @@ readCollectorItems <- function(){
                         collectorItems <- cbind(retVal, paramDF, respStructDF)
                         rownames(collectorItems) <- collectorItems$repoName
                         collectorItems$rScript <- lapply(collectorItems$Rscript_base64, base64Decode)
-                        save(retVal, paramDF, respStructDF, collectorItems, file='tmpReading.RData')
                         collectorItems <- collectorItems[, c('rScript',
                                                              'time',
                                                              'repo',
@@ -119,7 +118,6 @@ observeEvent(input$updateCollectorItem, {
                 allItems <- readCollectorItems()
                 app <- currApp()
                 id <- allItems[rownames(allItems) == selItem, 'id']
-                save(selItem, itemName, itemRscript, allItems, file='tmpUpdate.RData')
                 writeSchedulerRscript(app,
                                       itemName,
                                       itemRscript,

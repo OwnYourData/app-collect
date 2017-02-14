@@ -46,6 +46,7 @@ writeSchedulerRscript <- function(app, app_name, rScript, time, repo, active, id
         response_structure <- list(
                 rScript_structure
         )
+        save(app, app_name, rScript, time, repo, active, rScript_fields, rScript_structure, response_structure, file='tmpWrite.RData')
         parameters <- list(Rscript_base64     = base64Encode(rScript),
                            response_structure = response_structure,
                            pia_url            = app[['url']],

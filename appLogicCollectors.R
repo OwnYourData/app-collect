@@ -16,7 +16,8 @@ readCollectorItems <- function(){
                                                        function(x) data.frame(t(sapply(x,c)), stringsAsFactors = FALSE)))
                         collectorItems <- cbind(retVal, paramDF, respStructDF)
                         rownames(collectorItems) <- collectorItems$repoName
-                        collectorItems$rScript <- base64Decode(collectorItems$Rscript_base64)
+                        collectorItems$rScript <- lapply(collectorItems$Rscript_base64, base64Decode)
+                        save(retVal, paramDF, respStructDF, collectorItems, file='tmpReading.RData')
                         collectorItems <- collectorItems[, c('rScript',
                                                              'time',
                                                              'repo',
@@ -78,13 +79,6 @@ observeEvent(input$addCollectorItem, {
                                       itemRepo,
                                       itemActive)
                 initNames <- rownames(allItems)
-                allItems$rScript <- as.character(allItems$rScript )
-                allItems$frequency <- as.character(allItems$frequency)
-                allItems$repo <- as.character(allItems$repo)
-                allItems$active <- as.logical(allItems$active)
-                allItems <- rbind(allItems, c(itemRscript, 
-                                              itemRepo))
-                
                 updateSelectInput(session, 'collectorList',
                                   choices = c(initNames, itemName),
                                   selected = NA)
@@ -125,6 +119,7 @@ observeEvent(input$updateCollectorItem, {
                 allItems <- readCollectorItems()
                 app <- currApp()
                 id <- allItems[rownames(allItems) == selItem, 'id']
+                save(selItem, itemName, itemRscript, allItems, file='tmpUpdate.RData')
                 writeSchedulerRscript(app,
                                       itemName,
                                       itemRscript,

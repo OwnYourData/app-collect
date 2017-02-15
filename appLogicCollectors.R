@@ -32,6 +32,29 @@ readCollectorItems <- function(){
         collectorItems
 }
 
+collectorList <- function(){
+        allItems <- readCollectorItems()
+        colRepos <- vector()
+        if(nrow(allItems) > 0){
+                colRepos <- rownames(allItems)
+        } else {
+                colRepos <- c('keine Datenquellen vorhanden')
+        }
+        updateSelectInput(
+                session,
+                'statusRepoSelect',
+                choices = colRepos,
+                selected = colRepos[1])
+        appRepos <<- append(appReposDefault,
+                            setNames(as.character(allItems$repo),
+                                     as.list(rownames(allItems))))
+        updateSelectInput(
+                session,
+                'repoSelect',
+                choices = names(appRepos),
+                selected = 'Verlauf')
+}
+
 # show attributes on selecting an item in the Collector list
 observeEvent(input$collectorList, {
         selItem <- input$collectorList
@@ -101,6 +124,7 @@ observeEvent(input$addCollectorItem, {
                             style = 'warning',
                             append = 'false')
         }
+        collectorList()
 })
 
 observeEvent(input$updateCollectorItem, {
@@ -150,6 +174,7 @@ observeEvent(input$updateCollectorItem, {
                             style = 'warning',
                             append = 'false')
         }
+        collectorList()
 })
 
 observeEvent(input$delCollectorList, {
@@ -191,10 +216,12 @@ observeEvent(input$delCollectorList, {
                             style = 'warning',
                             append = 'false')
         }
+        collectorList()
 })
 
 observeEvent(input$importCollectorList, {
         errMsg  <- ''
+        succMsg  <- ''
         selItem <- input$collectorList
         if(is.null(selItem)){
                 errMsg <- 'Keine Quelle ausgewählt.'
@@ -232,6 +259,9 @@ observeEvent(input$importCollectorList, {
                             append = 'false')
         }
         if(succMsg != ''){
+                writeLog(paste0('Import für Datenquelle ',
+                                selItem,
+                                ' durchgeführt.'))
                 createAlert(session, 'taskInfo', 
                             'mySensorItemStatus',
                             title = 'Aktion erfolgreich',

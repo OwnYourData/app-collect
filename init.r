@@ -18,7 +18,10 @@ my_packages = c('shiny',
                 'lubridate',
                 'rhandsontable',
                 'stringi',
-                'digest')
+                'digest',
+                'tm',
+                'wordcloud',
+                'memoise')
 
 ###########################################################
 

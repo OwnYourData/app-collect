@@ -8,16 +8,9 @@ app_id <- 'eu.ownyourdata.collect'
 
 # definition of data structure
 currRepoSelect <- ''
-appRepos <- list(Vorlage = 'eu.ownyourdata.collect',
-                 Verlauf = 'eu.ownyourdata.collect.log')
+appRepos <- list()
+appReposDefault <- list(Verlauf = 'eu.ownyourdata.collect.log')
 appStruct <- list(
-        Vorlage = list(
-                fields      = c('text'),
-                fieldKey    = 'text',
-                fieldTypes  = c('string'),
-                fieldInits  = c('empty'),
-                fieldTitles = c('Text'),
-                fieldWidths = c(600)),
         Verlauf = list(
                 fields      = c('date', 'description'),
                 fieldKey    = 'date',

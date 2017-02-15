@@ -138,14 +138,16 @@ hot_dat2DF <- function(data, repoStruct, orderDecreasing){
         if(nrow(data) > 0){
                 data <- data[, fields, drop=FALSE]
                 data <- data[!is.na(data[fieldKey]), , drop=FALSE]
-                if(fieldTypes[match(fieldKey, fields)] == 'date'){
-                        data <- data[as.character(data[fieldKey]) != '', , drop=FALSE]
-                        data <- data[as.character(data[fieldKey]) != 'NA', , drop=FALSE]
-                } else {
-                        data <- data[data[fieldKey] != '', , drop=FALSE]
-                        data <- data[data[fieldKey] != 'NA', , drop=FALSE]
+                if(nrow(data) > 0){
+                        if(fieldTypes[match(fieldKey, fields)] == 'date'){
+                                data <- data[as.character(data[fieldKey]) != '', , drop=FALSE]
+                                data <- data[as.character(data[fieldKey]) != 'NA', , drop=FALSE]
+                        } else {
+                                data <- data[data[fieldKey] != '', , drop=FALSE]
+                                data <- data[data[fieldKey] != 'NA', , drop=FALSE]
+                        }
+                        DF <- rbind(data, initVal)
                 }
-                DF <- rbind(data, initVal)
         }
         if(nrow(data) == 0){
                 DF <- initVal
@@ -267,12 +269,16 @@ drawDataSheet <- function(){
         fieldKey <- repoStruct[['fieldKey']]
         fieldWidths <- repoStruct[['fieldWidths']]
         data <- repoData(repo)
-        if(is.null(data[[fieldKey]])){
+        if(nrow(data) == 0){
                 data <- data.frame()
         } else {
-                if(nrow(data) > 0){
-                        # data <- data[!(is.na(data[[fieldKey]]) | 
-                        #                        data[[fieldKey]] == 'NA'), ]
+                if(is.null(data[[fieldKey]])){
+                        data <- data.frame()
+                } else {
+                        if(nrow(data) > 0){
+                                # data <- data[!(is.na(data[[fieldKey]]) | 
+                                #                        data[[fieldKey]] == 'NA'), ]
+                        }
                 }
         }
         suppressWarnings(DF <- hot_dat2DF(data, repoStruct, TRUE))

@@ -35,7 +35,7 @@ readSchedulerItemsFunction <- function(){
 
 writeSchedulerRscript <- function(app, app_name, rScript, time, repo, active, id){
         rScript_fields <- list(
-                date='Date.now',
+                timestamp='Timestamp',
                 value='Rscript.result'
         )
         rScript_structure <- list(

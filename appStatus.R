@@ -1,19 +1,19 @@
 # layout for section "Status"
 # last update: 2016-10-10
 
-source('uiStatusDateSelect.R')
-# source('uiStatusItemConfig.R')
+source('appStatusSelect.R')
+source('appStatusTagCloud.R')
+source('appStatusLineGraph.R')
 
 appStatus <- function(){
         fluidRow(
                 column(12, 
                        # uiOutput('desktopUiStatusItemsRender')
-                       uiStatusDateSelect(),
+                       appStatusSelect(),
                        bsAlert('dataStatus'),
                        tabsetPanel(type='tabs',
-                                   tabPanel('Tab1', br(),
-                                            p('hello world')
-                                   )
+                                   appStatusTagCloud(),
+                                   appStatusLineGraph()
                        )
                 )
         )

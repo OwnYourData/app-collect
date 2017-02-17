@@ -7,6 +7,7 @@ source('srvScheduler.R', local=TRUE)
 
 source('appLogicCollectors.R', local=TRUE)
 source('appLogicTagCloud.R', local=TRUE)
+source('appLogicLineGraph.R', local=TRUE)
 
 # any record manipulations before storing a record
 appData <- function(record){
@@ -86,4 +87,9 @@ output$tagCloud <- renderPlot({
                               max.words= input$max,
                               colors=brewer.pal(8, "Dark2"))
         }
+})
+
+output$lineChart <- renderPlotly({
+        data <- currDataSelection()
+        linePlotly(data)
 })

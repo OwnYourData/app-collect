@@ -16,7 +16,12 @@ readCollectorItems <- function(){
                                                        function(x) data.frame(t(sapply(x,c)), stringsAsFactors = FALSE)))
                         collectorItems <- cbind(retVal, paramDF, respStructDF)
                         rownames(collectorItems) <- collectorItems$repoName
-                        collectorItems$rScript <- lapply(collectorItems$Rscript_base64, base64Decode)
+                        collectorItems$rScript <- lapply(collectorItems$Rscript_base64, 
+                                                         function(x) if(nchar(as.character(x)) < 2){
+                                                                 ''
+                                                         } else {
+                                                                 base64Decode(x)
+                                                         })
                         collectorItems <- collectorItems[, c('rScript',
                                                              'time',
                                                              'repo',
@@ -234,7 +239,7 @@ observeEvent(input$importCollectorList, {
                 selItemRepo <- as.character(trim(
                         allItems[rownames(allItems) == selItem, 'repo']))
                 rScript <- gsub('\\R', '\n', selItemRscript, perl=TRUE)
-                result <- eval(parse(text = rScript))
+                eval(parse(text = rScript))
                 if(length(result) > 1){
                         app <- currApp()
                         url <- itemsUrl(app[['url']], selItemRepo)
@@ -246,7 +251,19 @@ observeEvent(input$importCollectorList, {
                         writeItem(app, url, data)
                         succMsg <- 'Daten wurden erfolgreich gespeichert.'
                 } else {
-                        errMsg <- 'Das R-Skript lieferte keinen Rückgabewert und es wurden keine Daten gespeichert.'
+                        if(length(result) == 1){
+                                app <- currApp()
+                                url <- itemsUrl(app[['url']], selItemRepo)
+                                data <- list(
+                                        timestamp = as.integer(Sys.time()),
+                                        value = as.integer(result),
+                                        '_oydRepoName' = selItemName
+                                )
+                                writeItem(app, url, data)
+                                succMsg <- 'Daten wurden erfolgreich gespeichert.'
+                        } else {
+                                errMsg <- 'Das R-Skript lieferte keinen Rückgabewert und es wurden keine Daten gespeichert.'
+                        }
                 }
         }
         closeAlert(session, 'myCollectorItemStatus')

@@ -3,6 +3,6 @@
 
 appStatusLineGraph <- function(){
         tabPanel('Linien Diagramm', br(),
-                p('hello world')
+                 plotlyOutput('lineChart')
         )
 }

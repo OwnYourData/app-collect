@@ -3,7 +3,7 @@
 
 # Comments ================================================
 # - run locally
-#   runApp('~/cs/ownyourdata/apps/collect', host='0.0.0.0', port=1240)
+#   runApp('~/oyd/collect', host='0.0.0.0', port=1240)
 # - copy files to Github
 #   cp -r *.R *.r *.txt www docker github/app-collect; cd github/app-collect;
 
